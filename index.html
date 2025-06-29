@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>VOXL Portfolio - 3D Experience</title>
+    <link rel="stylesheet" href="/src/style.css" />
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <!-- Add Howler.js for audio functionality -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading" class="loading">
+        <div class="loading-container">
+          <div class="loading-title">
+            Enter the Park!
+          </div>
+          <div class="loading-progress">
+            <div class="loading-bar"></div>
+            <div class="loading-progress-text">0%</div>
+          </div>
+          <div class="loading-subtitle">
+            use arrow keys to move
+          </div>
+          <div class="loading-animation">
+            <div class="bouncing-dot"></div>
+            <div class="bouncing-dot"></div>
+            <div class="bouncing-dot"></div>
+          </div>
+          <button id="play-button" class="play-button" disabled>
+            <i class="fas fa-spinner fa-spin loading-spinner"></i>
+            <span class="button-text">Loading...</span>
+          </button>
+        </div>
+        <div class="retro-grid"></div>
+        <div class="retro-scanlines"></div>
+      </div>
+      
+      <!-- Control Buttons -->
+      <div class="control-buttons">
+        <button id="music-toggle" class="control-btn" title="Toggle Music">
+          <i class="fas fa-volume-up music-icon"></i>
+        </button>
+        <button id="theme-toggle" class="control-btn" title="Toggle Day/Night">
+          <i class="fas fa-sun theme-icon"></i>
+        </button>
+      </div>
+      
+      <!-- Modal Structure -->
+      <div id="modal" class="modal hidden">
+        <div class="modal-content">
+          <button id="modal-close" class="modal-close">&times;</button>
+          <div id="modal-body" class="modal-body">
+            <!-- Content will be dynamically inserted here -->
+          </div>
+        </div>
+      </div>
+      <div id="modal-overlay" class="modal-overlay hidden"></div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

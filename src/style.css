@@ -1,0 +1,732 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@keyframes pageLoad {
+  0% {
+    transform: scale(0.8) rotate(-2deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.05) rotate(1deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+  background: #587238;
+  animation: pageLoad 0.8s ease-out;
+}
+
+#app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Three.js canvas styling */
+canvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Loading screen - Retro Game Style with Modal Color Palette */
+.loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: var(--modal-bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  transition: all 0.6s ease-out;
+  font-family: 'Courier New', monospace;
+  overflow: hidden;
+}
+
+.retro-grid {
+  display: none;
+}
+
+.retro-scanlines {
+  display: none;
+}
+
+.loading-container {
+  text-align: center;
+  background: var(--modal-bg-color);
+  padding: 60px 100px;
+  border: 3px solid var(--modal-main-color);
+  box-shadow: 6px 6px var(--modal-main-color);
+  position: relative;
+  z-index: 3;
+  border-radius: 0;
+  max-width: 700px;
+  width: 95%;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
+
+.loading-title {
+  font-size: 44px;
+  color: var(--modal-main-color);
+  margin-bottom: 35px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  text-shadow: 2px 2px 0px var(--modal-dark-brown);
+}
+
+.loading-subtitle {
+  font-size: 18px;
+  color: var(--modal-font-color);
+  font-family: 'Courier New', monospace;
+  margin: 30px 0;
+  letter-spacing: 1.5px;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* Enhanced Progress Bar - Modal Color Style */
+.loading-progress {
+  position: relative;
+  width: 400px;
+  height: 20px;
+  background: var(--modal-dark-brown);
+  border: 2px solid var(--modal-main-color);
+  margin: 25px auto;
+  overflow: hidden;
+}
+
+.loading-bar {
+  height: 100%;
+  background: var(--modal-main-color);
+  width: 0%;
+  transition: width 0.3s ease;
+  position: relative;
+}
+
+.loading-progress-text {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--modal-font-color);
+  font-size: 16px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* Bouncing Dots Animation - Modal Color Style */
+.loading-animation {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0;
+}
+
+.bouncing-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--modal-light-brown);
+  border-radius: 50%;
+  animation: dotBounce 1.2s ease-in-out infinite;
+}
+
+.bouncing-dot:nth-child(1) { animation-delay: 0s; }
+.bouncing-dot:nth-child(2) { animation-delay: 0.2s; }
+.bouncing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotBounce {
+  0%, 100% { 
+    transform: translateY(0) scale(1);
+  }
+  50% { 
+    transform: translateY(-8px) scale(1.1);
+  }
+}
+
+/* Play Button - Modal Color Style */
+.play-button {
+  background: var(--modal-bg-color);
+  border: 2px solid var(--modal-main-color);
+  color: var(--modal-main-color);
+  padding: 15px 40px;
+  font-size: 16px;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 30px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 4px 4px var(--modal-main-color);
+}
+
+.play-button:not(:disabled):hover {
+  background: var(--modal-light-brown);
+  color: var(--modal-main-color);
+  box-shadow: 0px 0px var(--modal-main-color);
+}
+
+.play-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.play-button .loading-spinner {
+  margin-right: 8px;
+}
+
+.play-button .button-text {
+  transition: all 0.3s ease;
+}
+
+.loading.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.95);
+}
+
+@keyframes loadingBar {
+  0%, 100% { 
+    transform: scaleY(0.3);
+    opacity: 0.5;
+  }
+  50% { 
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Custom scrollbar for any overflow content */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 0, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 0, 0.7);
+}
+
+/* Modal Styles - Minimalistic Brown Theme */
+:root {
+  --modal-main-color: #8b6f47;
+  --modal-bg-color: #a0876b;
+  --modal-font-color: #f5f5dc;
+  --modal-font-color-sub: #d4c4a8;
+  --modal-input-focus: #6b5139;
+  --modal-light-brown: #b8a082;
+  --modal-medium-brown: #9d8463;
+  --modal-dark-brown: #6b5139;
+}
+
+@keyframes modalSlideIn {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--modal-bg-color);
+  border-radius: 10px;
+  border: 3px solid var(--modal-main-color);
+  box-shadow: 6px 6px var(--modal-main-color);
+  z-index: 1000;
+  max-width: 500px;
+  max-height: 85vh;
+  width: 90%;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: modalSlideIn 0.3s ease-out;
+  font-family: 'Courier New', monospace;
+}
+
+.modal.hidden {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.8);
+  pointer-events: none;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+}
+
+.modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-content {
+  position: relative;
+  height: 100%;
+  background: var(--modal-bg-color);
+  border-radius: 7px;
+}
+
+.modal-close {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: var(--modal-bg-color);
+  border: 3px solid var(--modal-main-color);
+  color: var(--modal-main-color);
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 1001;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 4px 4px var(--modal-main-color);
+  font-weight: bold;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  background: var(--modal-light-brown);
+}
+
+.modal-close:active {
+  box-shadow: 0px 0px var(--modal-main-color);
+  transform: translate(3px, 3px);
+}
+
+.modal-body {
+  padding: 25px 20px 20px;
+  color: var(--modal-font-color);
+  overflow-y: auto;
+  max-height: 85vh;
+}
+
+/* Hide scrollbar for webkit browsers */
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.modal-body {
+  scrollbar-width: none;
+}
+
+.modal-title {
+  color: var(--modal-main-color);
+  font-size: 32px;
+  font-weight: 900;
+  margin-bottom: 25px;
+  text-align: center;
+  letter-spacing: 1.5px;
+  text-shadow: 1px 1px 0px var(--modal-dark-brown);
+}
+
+.modal-description {
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 25px;
+  color: var(--modal-font-color);
+  background: var(--modal-light-brown);
+  padding: 25px;
+  border-radius: 8px;
+  border: 2px solid var(--modal-medium-brown);
+  box-shadow: 4px 4px var(--modal-medium-brown);
+  text-align: left;
+  font-weight: 500;
+}
+
+.modal-image {
+  width: 100%;
+  max-width: 400px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 20px auto;
+  display: block;
+  border: 3px solid var(--modal-main-color);
+  box-shadow: 4px 4px var(--modal-main-color);
+}
+
+.modal-links {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 25px;
+  flex-wrap: wrap;
+}
+
+.modal-link {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--modal-bg-color);
+  color: var(--modal-main-color);
+  text-decoration: none;
+  border: 3px solid var(--modal-main-color);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 600;
+  font-size: 15px;
+  box-shadow: 4px 4px var(--modal-main-color);
+}
+
+.modal-link:hover {
+  background: var(--modal-light-brown);
+}
+
+.modal-link:active {
+  box-shadow: 0px 0px var(--modal-main-color);
+  transform: translate(3px, 3px);
+}
+
+.contact-form {
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 20px;
+  background: var(--modal-light-brown);
+  border-radius: 8px;
+  border: 3px solid var(--modal-main-color);
+  box-shadow: 4px 4px var(--modal-main-color);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.contact-form .form-title {
+  color: var(--modal-font-color);
+  font-weight: 900;
+  font-size: 20px;
+  margin-bottom: 10px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  color: var(--modal-font-color);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 5px;
+  text-align: left;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  height: 40px;
+  border-radius: 5px;
+  border: 3px solid var(--modal-main-color);
+  background-color: var(--modal-bg-color);
+  box-shadow: 4px 4px var(--modal-main-color);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--modal-font-color);
+  padding: 10px 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  line-height: 1.4;
+}
+
+.form-group textarea {
+  height: 80px;
+  resize: vertical;
+  min-height: 70px;
+  padding: 12px;
+  line-height: 1.4;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: var(--modal-font-color-sub);
+  opacity: 0.8;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border: 3px solid var(--modal-input-focus);
+}
+
+.submit-btn {
+  margin: 25px auto 0 auto;
+  width: 160px;
+  height: 50px;
+  border-radius: 5px;
+  border: 3px solid var(--modal-main-color);
+  background-color: var(--modal-bg-color);
+  box-shadow: 4px 4px var(--modal-main-color);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--modal-main-color);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.submit-btn:hover {
+  background-color: var(--modal-light-brown);
+}
+
+.submit-btn:active {
+  box-shadow: 0px 0px var(--modal-main-color);
+  transform: translate(3px, 3px);
+}
+
+/* Control Buttons - Pastel Theme to Match Modals */
+.control-buttons {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  z-index: 50;
+}
+
+.control-btn {
+  width: 50px;
+  height: 50px;
+  background: var(--modal-bg-color);
+  border: 2px solid var(--modal-main-color);
+  border-radius: 8px;
+  color: var(--modal-main-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  position: relative;
+  box-shadow: 3px 3px var(--modal-main-color);
+}
+
+.control-btn:hover {
+  background: var(--modal-light-brown);
+  transform: translateY(-1px);
+  box-shadow: 4px 4px var(--modal-main-color);
+}
+
+.control-btn:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px var(--modal-main-color);
+}
+
+.control-btn.active {
+  background: var(--modal-main-color);
+  color: var(--modal-bg-color);
+  border-color: var(--modal-main-color);
+}
+
+.control-btn i {
+  transition: all 0.3s ease;
+}
+
+.control-btn:hover i {
+  transform: scale(1.1);
+}
+
+/* Responsive control buttons */
+@media (max-width: 768px) {
+  /* Mobile Loading Screen Optimizations */
+  .loading-container {
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 400px;
+    margin: 20px;
+  }
+  
+  .loading-title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+  }
+  
+  .loading-subtitle {
+    font-size: 14px;
+    margin: 20px 0;
+    letter-spacing: 1px;
+    line-height: 1.5;
+  }
+  
+  .loading-progress {
+    width: 100%;
+    max-width: 300px;
+    height: 16px;
+    margin: 20px auto;
+  }
+  
+  .loading-progress-text {
+    font-size: 14px;
+    top: 25px;
+  }
+  
+  .loading-animation {
+    margin: 20px 0;
+  }
+  
+  .play-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
+  .play-button i {
+    font-size: 14px;
+  }
+  
+  /* Control Buttons */
+  .control-buttons {
+    top: 15px;
+    right: 15px;
+    gap: 8px;
+  }
+  
+  .control-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  /* Responsive modal */
+  .modal {
+    width: 95%;
+    max-height: 90vh;
+    margin: 10px;
+  }
+  
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .modal-title {
+    font-size: 24px;
+  }
+  
+  .modal-links {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .modal-image {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Contact Form Mobile Optimization */
+  .contact-form {
+    padding: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  /* Extra small mobile devices */
+  .loading-container {
+    padding: 20px 15px;
+    width: 95%;
+  }
+  
+  .loading-title {
+    font-size: 24px;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+  }
+  
+  .loading-subtitle {
+    font-size: 12px;
+    margin: 15px 0;
+  }
+  
+  .loading-progress {
+    height: 14px;
+    margin: 15px auto;
+  }
+  
+  .play-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
