@@ -9,26 +9,26 @@ import { Capsule } from 'three/examples/jsm/math/Capsule.js';
 // =================================================================
 const sounds = {
   backgroundMusic: new Howl({
-    src: ["./sfx/music.ogg"],
+    src: ["/sfx/music.ogg"],
     loop: true,
     volume: 0.3,
     preload: true,
   }),
 
   projectsSFX: new Howl({
-    src: ["./sfx/projects.ogg"],
+    src: ["/sfx/projects.ogg"],
     volume: 0.5,
     preload: true,
   }),
 
   pokemonSFX: new Howl({
-    src: ["./sfx/pokemon.ogg"],
+    src: ["/sfx/pokemon.ogg"],
     volume: 0.5,
     preload: true,
   }),
 
   jumpSFX: new Howl({
-    src: ["./sfx/jumpsfx.ogg"],
+    src: ["/sfx/jumpsfx.ogg"],
     volume: 1.0,
     preload: true,
   }),
@@ -270,7 +270,7 @@ const modalContent = {
     Project_1: {
         title: "FabricOS",
         description: "A 3js based website to customize a 3d model of a shirt in real time.",
-        image: "./Project1-billboard.png",
+        image: "/Project1-billboard.png",
         links: [
             { text: "View Live Demo", url: "https://customizer-three.vercel.app" },
             { text: "GitHub Code", url: "https://github.com/irfy2k/Customizer.git" }
@@ -279,7 +279,7 @@ const modalContent = {
     Project_2: {
         title: "Celestia",
         description: "A fullstack website about space and celestial bodies that allows users to explore planets, stars, and galaxies. Frontend Built with basic css, js, and html cuz I am masochist",
-        image: "./Project2-billboard.png",
+        image: "/Project2-billboard.png",
         links: [
             { text: "GitHub Code", url: "https://github.com/nanfaweb/CELESTIA.git" }
         ]
@@ -287,7 +287,7 @@ const modalContent = {
     Project_3: {
         title: "A bootleg portfolio Website",
         description: "Something I cooked up in an hour when I was bored",
-        image: "./Project3-billboard.png",
+        image: "/Project3-billboard.png",
         links: [
             { text: "View Live Demo", url: "https://example.com/weather-app" }
         ]
@@ -464,7 +464,7 @@ Sent from Portfolio Contact Form
 let loadedModel = null; // Global reference to the loaded model
 
 const loader = new GLTFLoader();
-loader.load('./src/Portfolio-map-Snorlax1.glb', function (gltf) {
+loader.load('/Portfolio-map-Snorlax1.glb', function (gltf) {
     loadedModel = gltf.scene;
     scene.add(loadedModel);
 
