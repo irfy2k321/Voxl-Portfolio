@@ -464,7 +464,7 @@ Sent from Portfolio Contact Form
 let loadedModel = null; // Global reference to the loaded model
 
 const loader = new GLTFLoader();
-loader.load('/src/Portfolio-map-Snorlax1.glb', function (gltf) {
+loader.load('./src/Portfolio-map-Snorlax1.glb', function (gltf) {
     loadedModel = gltf.scene;
     scene.add(loadedModel);
 
