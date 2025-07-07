@@ -270,7 +270,32 @@ const modalContent = {
         title: "Let's Connect!",
         description: "Ready to start a conversation? Whether you have a project in mind, want to collaborate, or just want to chat about web development and 3D art, I'd love to hear from you!",
         image: null,
-        isContact: true
+        contacts: [
+            { 
+                platform: "Discord", 
+                value: "irfy2k", 
+                icon: "fab fa-discord",
+                link: "https://discord.com/users/irfy2k"
+            },
+            { 
+                platform: "LinkedIn", 
+                value: "Ahmed Zuhair Baig", 
+                icon: "fab fa-linkedin",
+                link: "https://www.linkedin.com/in/ahmed-zuhair-baig-a3719a286"
+            },
+            { 
+                platform: "WhatsApp", 
+                value: "+92 331 6842309", 
+                icon: "fab fa-whatsapp",
+                link: "https://wa.me/923316842309"
+            },
+            { 
+                platform: "Email", 
+                value: "irfy2k1@outlook.com", 
+                icon: "fas fa-envelope",
+                link: "mailto:irfy2k1@outlook.com"
+            }
+        ]
     }
 };
 
@@ -296,25 +321,25 @@ function showModal(objectName) {
     
     modalHTML += `<p class="modal-description">${content.description}</p>`;
     
-    if (content.isContact) {
+    if (content.contacts) {
         modalHTML += `
-            <div class="contact-form">
-                <h3 class="form-title">Get in Touch</h3>
-                <form id="contact-form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" name="name" required placeholder="Your name">
+            <div class="contact-links">
+                <h3 class="contact-title">Ways to Reach Me</h3>
+                <div class="contact-grid">`;
+        
+        content.contacts.forEach(contact => {
+            modalHTML += `
+                <a href="${contact.link}" class="contact-item" target="_blank" rel="noopener noreferrer">
+                    <i class="${contact.icon}"></i>
+                    <div class="contact-info">
+                        <span class="contact-platform">${contact.platform}</span>
+                        <span class="contact-value">${contact.value}</span>
                     </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required placeholder="your.email@example.com">
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" required placeholder="Tell me about your project or just say hello!"></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
+                </a>`;
+        });
+        
+        modalHTML += `
+                </div>
             </div>`;
     } else if (content.links) {
         modalHTML += '<div class="modal-links">';
@@ -327,11 +352,6 @@ function showModal(objectName) {
     modalBody.innerHTML = modalHTML;
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
-    
-    if (content.isContact) {
-        const form = document.getElementById('contact-form');
-        form.addEventListener('submit', handleContactForm);
-    }
 }
 
 function hideModal() {
@@ -350,79 +370,6 @@ function hideModal() {
     if (!isMuted) {
         playSound("projectsSFX");
     }
-}
-
-function handleContactForm(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const message = formData.get('message');
-    
-    const submitBtn = document.querySelector('.submit-btn');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Sending...';
-    submitBtn.disabled = true;
-    
-    const emailData = {
-        to: 'irfy2k1@outlook.com',
-        subject: `Portfolio Contact from ${name}`,
-        body: `
-New message from your portfolio website:
-
-Name: ${name}
-Email: ${email}
-
-Message:
-${message}
-
----
-Sent from Portfolio Contact Form
-        `.trim()
-    };
-    
-    // Method 1: Try FormSubmit
-    fetch('https://formsubmit.co/7cdd4393cea5cba574e4368fa9084619', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            name: name,
-            email: email,
-            message: message,
-            _subject: `Portfolio Contact from ${name}`,
-            _captcha: 'false',
-            _template: 'table'
-        })
-    })
-    .then(response => {
-        if (response.ok) {
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-            alert('Thank you for your message! I\'ll get back to you soon.');
-            hideModal();
-        } else {
-            throw new Error('FormSubmit failed');
-        }
-    })
-    .catch(error => {
-        console.log('FormSubmit failed, trying mailto fallback:', error);
-        
-        // Method 2: Fallback to mailto
-        const subject = encodeURIComponent(emailData.subject);
-        const body = encodeURIComponent(emailData.body);
-        const mailtoLink = `mailto:${emailData.to}?subject=${subject}&body=${body}`;
-        
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
-        
-        window.open(mailtoLink, '_blank');
-        
-        alert('Email client opened! Please send the email to complete your message.');
-        hideModal();
-    });
 }
 
 let loadedModel = null;
@@ -1010,49 +957,40 @@ function createMobileControls() {
                 justify-content: center !important;
             }
             
-            /* Contact form mobile improvements */
-            .contact-form {
+            /* Contact links mobile improvements */
+            .contact-links {
                 margin-top: 15px !important;
+                padding: 15px !important;
             }
             
-            .form-title {
+            .contact-title {
                 font-size: 18px !important;
                 margin-bottom: 15px !important;
                 text-align: center !important;
             }
             
-            .form-group {
-                margin-bottom: 15px !important;
+            .contact-grid {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
             }
             
-            .form-group label {
-                font-size: 14px !important;
-                margin-bottom: 5px !important;
-                display: block !important;
-            }
-            
-            .form-group input,
-            .form-group textarea {
-                width: 100% !important;
+            .contact-item {
                 padding: 12px !important;
-                font-size: 16px !important;
+                gap: 12px !important;
+                min-height: 60px !important;
                 border-radius: 6px !important;
-                border: 2px solid #ddd !important;
-                box-sizing: border-box !important;
             }
             
-            .form-group textarea {
-                min-height: 100px !important;
-                resize: vertical !important;
+            .contact-item i {
+                font-size: 20px !important;
             }
             
-            .submit-btn {
-                width: 100% !important;
-                padding: 12px !important;
-                font-size: 16px !important;
-                border-radius: 8px !important;
-                min-height: 44px !important;
-                margin-top: 10px !important;
+            .contact-platform {
+                font-size: 15px !important;
+            }
+            
+            .contact-value {
+                font-size: 13px !important;
             }
             
             /* Modal close button mobile improvements */
