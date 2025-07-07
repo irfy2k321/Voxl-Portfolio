@@ -960,8 +960,109 @@ function createMobileControls() {
             #mobile-controls { display: block; }
             .controls { top: 10px; right: 10px; gap: 8px; }
             .control-btn { width: 40px; height: 40px; font-size: 16px; }
-            .modal { margin: 10px; max-width: calc(100vw - 20px); max-height: calc(100vh - 20px); }
-            .modal-image { max-width: 100%; height: auto; }
+            
+            /* Improved mobile modal styles */
+            .modal { 
+                margin: 5px !important; 
+                max-width: calc(100vw - 10px) !important; 
+                max-height: calc(100vh - 10px) !important;
+                width: calc(100vw - 10px) !important;
+                border-radius: 12px !important;
+                overflow: hidden !important;
+            }
+            
+            .modal-title { 
+                font-size: 20px !important; 
+                margin-bottom: 15px !important;
+                text-align: center !important;
+                padding: 0 10px !important;
+            }
+            
+            .modal-description { 
+                font-size: 14px !important; 
+                line-height: 1.5 !important;
+                margin-bottom: 20px !important;
+                padding: 0 5px !important;
+            }
+            
+            .modal-image { 
+                max-width: 100% !important; 
+                height: auto !important;
+                border-radius: 8px !important;
+                margin: 10px 0 !important;
+            }
+            
+            .modal-links {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 12px !important;
+                margin-top: 20px !important;
+            }
+            
+            .modal-link {
+                padding: 12px 16px !important;
+                font-size: 14px !important;
+                border-radius: 8px !important;
+                text-align: center !important;
+                min-height: 44px !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            /* Contact form mobile improvements */
+            .contact-form {
+                margin-top: 15px !important;
+            }
+            
+            .form-title {
+                font-size: 18px !important;
+                margin-bottom: 15px !important;
+                text-align: center !important;
+            }
+            
+            .form-group {
+                margin-bottom: 15px !important;
+            }
+            
+            .form-group label {
+                font-size: 14px !important;
+                margin-bottom: 5px !important;
+                display: block !important;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                width: 100% !important;
+                padding: 12px !important;
+                font-size: 16px !important;
+                border-radius: 6px !important;
+                border: 2px solid #ddd !important;
+                box-sizing: border-box !important;
+            }
+            
+            .form-group textarea {
+                min-height: 100px !important;
+                resize: vertical !important;
+            }
+            
+            .submit-btn {
+                width: 100% !important;
+                padding: 12px !important;
+                font-size: 16px !important;
+                border-radius: 8px !important;
+                min-height: 44px !important;
+                margin-top: 10px !important;
+            }
+            
+            /* Modal close button mobile improvements */
+            #modal-close {
+                top: 10px !important;
+                right: 10px !important;
+                width: 44px !important;
+                height: 44px !important;
+                font-size: 18px !important;
+            }
         }`;
     document.head.appendChild(mobileStyles);
     setupMobileTouchEvents();
