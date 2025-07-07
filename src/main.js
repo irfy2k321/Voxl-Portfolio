@@ -282,6 +282,12 @@ function showModal(objectName) {
     const content = modalContent[objectName];
     if (!content) return;
     
+    // Hide mobile controls when modal is opened
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls) {
+        mobileControls.style.display = 'none';
+    }
+    
     let modalHTML = `<h2 class="modal-title">${content.title}</h2>`;
     
     if (content.image) {
@@ -334,6 +340,12 @@ function hideModal() {
     
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
+    
+    // Show mobile controls when modal is closed
+    const mobileControls = document.getElementById('mobile-controls');
+    if (mobileControls && isMobile) {
+        mobileControls.style.display = 'block';
+    }
     
     if (!isMuted) {
         playSound("projectsSFX");
@@ -934,7 +946,7 @@ function createMobileControls() {
     
     const mobileStyles = document.createElement('style');
     mobileStyles.textContent = `
-        #mobile-controls { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: block; }
+        #mobile-controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; display: block; }
         .mobile-controls-container { background: rgba(139, 101, 89, 0.9); border-radius: 15px; padding: 15px; backdrop-filter: blur(10px); border: 2px solid rgba(205, 164, 147, 0.3); }
         .dpad-container { display: grid; grid-template-rows: 50px 50px 50px; grid-template-columns: 50px 50px 50px; gap: 5px; width: 160px; height: 160px; }
         .dpad-up { grid-column: 2; grid-row: 1; }
