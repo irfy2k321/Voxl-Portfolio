@@ -84,7 +84,7 @@ camera.updateProjectionMatrix();
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
-controls.enableZoom = true;
+controls.enableZoom = false;
 controls.enableRotate = false;
 controls.enablePan = false;
 controls.target.set(5, 5, -5);
