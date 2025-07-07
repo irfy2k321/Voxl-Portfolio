@@ -4,9 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { Octree } from 'three/examples/jsm/math/Octree.js';
 import { Capsule } from 'three/examples/jsm/math/Capsule.js';
 
-// =================================================================
-// AUDIO SYSTEM WITH HOWLER.JS
-// =================================================================
+// Audio system with Howler.js
 const sounds = {
   backgroundMusic: new Howl({
     src: ["/sfx/music.ogg"],
@@ -14,19 +12,16 @@ const sounds = {
     volume: 0.3,
     preload: true,
   }),
-
   projectsSFX: new Howl({
     src: ["/sfx/projects.ogg"],
     volume: 0.5,
     preload: true,
   }),
-
   pokemonSFX: new Howl({
     src: ["/sfx/pokemon.ogg"],
     volume: 0.5,
     preload: true,
   }),
-
   jumpSFX: new Howl({
     src: ["/sfx/jumpsfx.ogg"],
     volume: 1.0,
@@ -48,9 +43,6 @@ function stopSound(soundId) {
   }
 }
 
-// =================================================================
-// SCENE & RENDERER SETUP
-// =================================================================
 const aspect = window.innerWidth / window.innerHeight;
 
 const scene = new THREE.Scene();
@@ -70,9 +62,6 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 const app = document.getElementById('app');
 app.appendChild(renderer.domElement);
 
-// =================================================================
-// CAMERA & CONTROLS
-// =================================================================
 const camera = new THREE.OrthographicCamera( -aspect*50, aspect*50, 50, -50, 1, 1000);
 camera.position.set(-30, 50, -55);
 camera.zoom = 2;
@@ -82,14 +71,11 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.enableZoom = true;
-controls.enableRotate = false; // Disabled camera rotation
-controls.enablePan = false; // Disabled camera panning
+controls.enableRotate = false;
+controls.enablePan = false;
 controls.target.set(5, 5, -5);
 controls.update();
 
-// =================================================================
-// LIGHTING
-// =================================================================
 const sun = new THREE.DirectionalLight(0xffffff, 2.5);
 sun.castShadow = true;
 sun.position.set(150, 200, 100);
@@ -114,31 +100,20 @@ const rimLight = new THREE.DirectionalLight(0xffffff, 0.8);
 rimLight.position.set(-100, 80, -100);
 scene.add(rimLight);
 
-// =================================================================
-// THEME & AUDIO CONTROLS
-// =================================================================
 const musicToggleButton = document.querySelector("#music-toggle");
 const themeToggleButton = document.querySelector("#theme-toggle");
 
-// State variables
-let isDarkTheme = false;
-
-// Toggle Music Function
 function toggleMusic() {
   isMuted = !isMuted;
   const musicIcon = musicToggleButton?.querySelector('.music-icon');
   
   if (isMuted) {
     sounds.backgroundMusic.pause();
-    if (musicIcon) {
-      musicIcon.className = 'fas fa-volume-mute music-icon';
-    }
+    if (musicIcon) musicIcon.className = 'fas fa-volume-mute music-icon';
     musicToggleButton?.classList.add('active');
   } else {
     sounds.backgroundMusic.play();
-    if (musicIcon) {
-      musicIcon.className = 'fas fa-volume-up music-icon';
-    }
+    if (musicIcon) musicIcon.className = 'fas fa-volume-up music-icon';
     musicToggleButton?.classList.remove('active');
   }
   
@@ -147,7 +122,6 @@ function toggleMusic() {
   }
 }
 
-// Toggle Theme Function
 function toggleTheme() {
   if (!isMuted) {
     playSound("projectsSFX");
@@ -161,21 +135,17 @@ function toggleTheme() {
   
   if (isCurrentlyDark) {
     // Switching to light theme
-    if (themeIcon) {
-      themeIcon.className = 'fas fa-sun theme-icon';
-    }
+    if (themeIcon) themeIcon.className = 'fas fa-sun theme-icon';
     themeToggleButton?.classList.remove('active');
     scene.background = new THREE.Color(0xbcd38d);
   } else {
     // Switching to dark theme
-    if (themeIcon) {
-      themeIcon.className = 'fas fa-moon theme-icon';
-    }
+    if (themeIcon) themeIcon.className = 'fas fa-moon theme-icon';
     themeToggleButton?.classList.add('active');
     scene.background = new THREE.Color(0x1a1a2e);
   }
 
-  // Animate lighting changes for day/night cycle with gradual transitions over 2 seconds
+  // Animate lighting changes for day/night cycle
   if (typeof gsap !== 'undefined') {
     gsap.to(ambientLight.color, {
       r: isCurrentlyDark ? 1.0 : 0.25,
@@ -183,17 +153,14 @@ function toggleTheme() {
       b: isCurrentlyDark ? 1.0 : 0.78,
       ease: "power2.inOut",
     });
-
     gsap.to(ambientLight, {
       intensity: isCurrentlyDark ? 0.8 : 0.9,
       ease: "power2.inOut",
     });
-
     gsap.to(sun, {
       intensity: isCurrentlyDark ? 1 : 0.8,
       ease: "power2.inOut",
     });
-
     gsap.to(sun.color, {
       r: isCurrentlyDark ? 1.0 : 0.25,
       g: isCurrentlyDark ? 1.0 : 0.41,
@@ -203,13 +170,11 @@ function toggleTheme() {
   } else {
     // Fallback without GSAP animations
     if (!isCurrentlyDark) {
-      // Switching to dark theme
       ambientLight.color.setRGB(0.25, 0.31, 0.78);
       ambientLight.intensity = 0.9;
       sun.intensity = 0.8;
       sun.color.setRGB(0.25, 0.41, 0.88);
     } else {
-      // Switching to light theme
       ambientLight.color.setRGB(1.0, 1.0, 1.0);
       ambientLight.intensity = 0.8;
       sun.intensity = 1.0;
@@ -218,19 +183,14 @@ function toggleTheme() {
   }
 }
 
-// =================================================================
-// PLAYER MOVEMENT & PHYSICS SETUP
-// =================================================================
 const clock = new THREE.Clock();
 
-// Physics Constants
 const GRAVITY = 30;
 const CAPSULE_RADIUS = 0.8;
 const CAPSULE_HEIGHT = 1.2;
-const JUMP_HEIGHT = 18; // Increased from 12 to 18
-const MOVE_SPEED = 16; // Increased from 8 to 16 (2x speed)
+const JUMP_HEIGHT = 18;
+const MOVE_SPEED = 16;
 
-// Physics Objects
 const colliderOctree = new Octree();
 const playerCollider = new Capsule(
   new THREE.Vector3(0, CAPSULE_RADIUS, 0),
@@ -238,34 +198,25 @@ const playerCollider = new Capsule(
   CAPSULE_RADIUS
 );
 
-// Player State
 let character = {
     instance: null,
     spawnPosition: new THREE.Vector3(),
-    isMoving: false, // This can be used for animations later if needed
-    lastHopTime: 0, // Track when last hop occurred
-    hopCooldown: 300, // Milliseconds between hops (adjust for hop frequency)
+    isMoving: false,
+    lastHopTime: 0,
+    hopCooldown: 300,
 };
 let playerVelocity = new THREE.Vector3();
 let playerOnFloor = false;
 
-// Input State
 const pressedButtons = { up: false, left: false, right: false, down: false };
 let targetRotation = 0;
 
-// =================================================================
-// INTERACTIVITY & UI STATE
-// =================================================================
 const intersectObjects = [];
 const intersectObjectsNames = ["Project_1", "Project_2", "Project_3", "Chicken", "Snorlax", "Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Chest", "Picnic"];
 const objectStates = new Map();
 let gameStarted = false;
 let isLoadingComplete = false;
-let loadingStartTime = null;
 
-// =================================================================
-// MODAL & UI LOGIC
-// =================================================================
 const modalContent = {
     Project_1: {
         title: "FabricOS",
@@ -306,7 +257,6 @@ const modalContent = {
     }
 };
 
-// Modal functions
 function showModal(objectName) {
     const modal = document.getElementById('modal');
     const overlay = document.getElementById('modal-overlay');
@@ -352,12 +302,9 @@ function showModal(objectName) {
     }
     
     modalBody.innerHTML = modalHTML;
-    
-    // Show modal
     modal.classList.remove('hidden');
     overlay.classList.remove('hidden');
     
-    // Handle contact form submission
     if (content.isContact) {
         const form = document.getElementById('contact-form');
         form.addEventListener('submit', handleContactForm);
@@ -371,7 +318,6 @@ function hideModal() {
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
     
-    // Play sound effect when closing modal
     if (!isMuted) {
         playSound("projectsSFX");
     }
@@ -384,13 +330,11 @@ function handleContactForm(e) {
     const email = formData.get('email');
     const message = formData.get('message');
     
-    // Show loading state on submit button
     const submitBtn = document.querySelector('.submit-btn');
     const originalText = submitBtn.textContent;
     submitBtn.textContent = 'Sending...';
     submitBtn.disabled = true;
     
-    // Prepare email data
     const emailData = {
         to: 'irfy2k1@outlook.com',
         subject: `Portfolio Contact from ${name}`,
@@ -408,9 +352,7 @@ Sent from Portfolio Contact Form
         `.trim()
     };
     
-    // Try multiple email sending methods
-    
-    // Method 1: Try FormSubmit with your verified token
+    // Method 1: Try FormSubmit
     fetch('https://formsubmit.co/7cdd4393cea5cba574e4368fa9084619', {
         method: 'POST',
         headers: {
@@ -428,7 +370,6 @@ Sent from Portfolio Contact Form
     })
     .then(response => {
         if (response.ok) {
-            // Success with FormSubmit
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
             alert('Thank you for your message! I\'ll get back to you soon.');
@@ -445,11 +386,9 @@ Sent from Portfolio Contact Form
         const body = encodeURIComponent(emailData.body);
         const mailtoLink = `mailto:${emailData.to}?subject=${subject}&body=${body}`;
         
-        // Reset button state
         submitBtn.textContent = originalText;
         submitBtn.disabled = false;
         
-        // Open email client
         window.open(mailtoLink, '_blank');
         
         alert('Email client opened! Please send the email to complete your message.');
@@ -457,12 +396,7 @@ Sent from Portfolio Contact Form
     });
 }
 
-
-// =================================================================
-// MODEL LOADING
-// =================================================================
-let loadedModel = null; // Global reference to the loaded model
-
+let loadedModel = null;
 const loader = new GLTFLoader();
 loader.load('/Portfolio-map-Snorlax1.glb', function (gltf) {
     loadedModel = gltf.scene;
@@ -470,8 +404,8 @@ loader.load('/Portfolio-map-Snorlax1.glb', function (gltf) {
 
     loadedModel.traverse((child) => {
         if (child.isMesh) {
-            child.castShadow = true; 
-            child.receiveShadow = true; 
+            child.castShadow = true;
+            child.receiveShadow = true;
         }
 
         if (intersectObjectsNames.includes(child.name)) {
@@ -487,32 +421,23 @@ loader.load('/Portfolio-map-Snorlax1.glb', function (gltf) {
         if (child.name === "Character") {
             character.instance = child;
             character.spawnPosition.copy(child.position);
-
-            // Initialize the physics capsule at the character's starting position
             playerCollider.start.copy(child.position).add(new THREE.Vector3(0, CAPSULE_RADIUS, 0));
             playerCollider.end.copy(child.position).add(new THREE.Vector3(0, CAPSULE_HEIGHT, 0));
-            
             console.log('Player character found and physics capsule initialized!');
         }
         
         // --- SETUP WORLD COLLISION ---
         if (child.name === "Ground_Collider") {
             colliderOctree.fromGraphNode(child);
-            child.visible = false; // Make the collision mesh invisible
+            child.visible = false;
             console.log('Ground collider found and Octree built!');
         }
     });
     
-    loadingStartTime = Date.now();
     startLoadingProgress();
 }, undefined, function (error) {
     console.error('An error occurred while loading the model:', error);
 });
-
-
-// =================================================================
-// GAME START & LOADING SCREEN
-// =================================================================
 
 function startLoadingProgress() {
     const loadingBar = document.querySelector('.loading-bar');
@@ -521,18 +446,12 @@ function startLoadingProgress() {
     let progress = 0;
     
     const progressInterval = setInterval(() => {
-        progress += Math.random() * 8 + 2; // Faster progress increments
+        progress += Math.random() * 8 + 2; 
         if (progress > 100) progress = 100;
         
-        if (loadingBar) {
-            loadingBar.style.width = progress + '%';
-        }
+        if (loadingBar) loadingBar.style.width = progress + '%';
+        if (progressText) progressText.textContent = Math.floor(progress) + '%';
         
-        if (progressText) {
-            progressText.textContent = Math.floor(progress) + '%';
-        }
-        
-        // Enable button as soon as loading is complete (no minimum time)
         if (progress >= 100) {
             clearInterval(progressInterval);
             isLoadingComplete = true;
@@ -545,19 +464,14 @@ function startLoadingProgress() {
                     spinner.className = 'fas fa-play';
                     spinner.style.marginRight = '10px';
                 }
-                if (buttonText) {
-                    buttonText.textContent = 'Enter Park!';
-                }
+                if (buttonText) buttonText.textContent = 'Enter Park!';
                 
                 playButton.style.animation = 'loadingPulse 1s ease-in-out infinite alternate';
             }
         }
-    }, 50); // Faster update interval for smoother animation
+    }, 50);
 }
 
-// =================================================================
-// CORE MOVEMENT & PHYSICS FUNCTIONS
-// =================================================================
 function respawnCharacter() {
     if (!character.instance) return;
     character.instance.position.copy(character.spawnPosition);
@@ -593,10 +507,10 @@ function updatePlayer(deltaTime) {
     playerVelocity.addScaledVector(playerVelocity, damping);
 
     const moveVector = new THREE.Vector3();
-    if (pressedButtons.up) moveVector.x = 1;     // Forward (positive Z)
-    if (pressedButtons.down) moveVector.x = -1;  // Backward (negative Z)
-    if (pressedButtons.left) moveVector.z = -1;  // Left (negative X)
-    if (pressedButtons.right) moveVector.z = 1;  // Right (positive X)
+    if (pressedButtons.up) moveVector.x = 1;
+    if (pressedButtons.down) moveVector.x = -1;
+    if (pressedButtons.left) moveVector.z = -1;
+    if (pressedButtons.right) moveVector.z = 1;
     moveVector.normalize();
 
     if (moveVector.length() > 0) {
@@ -605,16 +519,12 @@ function updatePlayer(deltaTime) {
         // Continuous hopping while moving and on floor
         const currentTime = Date.now();
         if (playerOnFloor && (currentTime - character.lastHopTime) > character.hopCooldown) {
-            playerVelocity.y = JUMP_HEIGHT * 0.8; // Increased hop height for movement
+            playerVelocity.y = JUMP_HEIGHT * 0.8;
             character.lastHopTime = currentTime;
-            
-            // Play jump sound effect
-            if (!isMuted) {
-                playSound("jumpSFX");
-            }
+            if (!isMuted) playSound("jumpSFX");
         }
         
-        // Fixed rotation calculations (0 = facing forward/up, rotations go clockwise)
+        // Fixed rotation based on isometric view
         if (pressedButtons.up && !pressedButtons.left && !pressedButtons.right) targetRotation = 0;           // Forward
         else if (pressedButtons.down && !pressedButtons.left && !pressedButtons.right) targetRotation = Math.PI;     // Backward
         else if (pressedButtons.left && !pressedButtons.up && !pressedButtons.down) targetRotation = Math.PI / 2;    // Left
@@ -644,23 +554,16 @@ function updateCameraToFollowPlayer() {
     if (!character.instance || !gameStarted) return;
     
     const targetPosition = new THREE.Vector3().copy(character.instance.position);
-    
-    // Third-person camera (only camera mode now)
     const cameraOffset = new THREE.Vector3(-35, 50, -60);
     const newCameraPosition = new THREE.Vector3().addVectors(targetPosition, cameraOffset);
     camera.position.lerp(newCameraPosition, 0.1);
     controls.target.lerp(targetPosition, 0.1);
 }
 
-// =================================================================
-// EVENT HANDLERS
-// =================================================================
 function onKeyDown(event) {
-    // Don't handle keyboard input if using mobile controls
     if (isMobile) return;
+    if (event.code.toLowerCase() === "keyr") respawnCharacter();
     
-    if (event.code.toLowerCase() === "keyr") { respawnCharacter(); }
-    // Removed space jump functionality - hopping is now integrated into movement
     switch (event.code.toLowerCase()) {
         case "keyw": case "arrowup": pressedButtons.up = true; break;
         case "keys": case "arrowdown": pressedButtons.down = true; break;
@@ -670,7 +573,6 @@ function onKeyDown(event) {
 }
 
 function onKeyUp(event) {
-    // Don't handle keyboard input if using mobile controls
     if (isMobile) return;
     
     switch (event.code.toLowerCase()) {
@@ -681,13 +583,11 @@ function onKeyUp(event) {
     }
 }
 
-// Window resize handler
 function handleResize() {
     const width = window.innerWidth;
     const height = window.innerHeight;
     const aspect = width / height;
     
-    // Update orthographic camera frustum
     camera.left = -aspect * 50;
     camera.right = aspect * 50;
     camera.top = 50;
@@ -705,14 +605,11 @@ function handlePointerMove(event) {
 }
 
 function handleClick(event) {
-    // Don't allow clicks until game has started
     if (!gameStarted) return;
     
-    // Update pointer position
     pointer.x = (event.clientX / window.innerWidth) * 2 - 1;
     pointer.y = -(event.clientY / window.innerHeight) * 2 + 1;
     
-    // Perform raycast
     raycaster.setFromCamera(pointer, camera);
     const intersects = raycaster.intersectObjects(intersectObjects, true);
     
@@ -721,29 +618,20 @@ function handleClick(event) {
         const objectName = clickedObject.parent ? clickedObject.parent.name : clickedObject.name;
         
         if (intersectObjectsNames.includes(objectName)) {
-            console.log(`Clicked on: ${objectName}`);
-            
-            // Check if it's a Pokémon or other interactive object (not Project or Chest)
             const hopObjects = ["Chicken", "Snorlax", "Pikachu", "Bulbasaur", "Charmander", "Squirtle"];
             
             if (hopObjects.includes(objectName)) {
-                if (!isMuted) {
-                    playSound("pokemonSFX");
-                }
+                if (!isMuted) playSound("pokemonSFX");
                 hopAnimation(objectName);
             } else if (objectName.startsWith("Project_") || objectName === "Chest" || objectName === "Picnic") {
-                if (!isMuted) {
-                    playSound("projectsSFX");
-                }
+                if (!isMuted) playSound("projectsSFX");
                 showModal(objectName);
             }
         }
     }
 }
 
-// Enhanced bounce animation with movement and collision
 function hopAnimation(objectName) {
-    // Find the object in the scene
     let targetObject = null;
     loadedModel.traverse((child) => {
         if (child.name === objectName) {
@@ -753,26 +641,9 @@ function hopAnimation(objectName) {
     
     if (!targetObject) return;
     
-    // Get current position from object (this will be the last position if it moved before)
     const currentState = objectStates.get(objectName);
-    const startPosition = {
-        x: targetObject.position.x,
-        y: targetObject.position.y,
-        z: targetObject.position.z
-    };
-    const startRotation = {
-        x: targetObject.rotation.x,
-        y: targetObject.rotation.y,
-        z: targetObject.rotation.z
-    };
-    
-    // Animation parameters
-    const bounceHeight = 8;
     const movementRadius = 4;
-    const duration = 2.5;
-    const bounces = 4;
     
-    // Physics simulation
     let velocity = {
         x: (Math.random() - 0.5) * 8,
         y: 15,
@@ -781,71 +652,47 @@ function hopAnimation(objectName) {
     
     const gravity = -25;
     const damping = 0.7;
-    const groundLevel = currentState.position.y; // Use original ground level
+    const groundLevel = currentState.position.y;
     const boundaries = {
         x: { min: currentState.position.x - movementRadius, max: currentState.position.x + movementRadius },
         z: { min: currentState.position.z - movementRadius, max: currentState.position.z + movementRadius }
     };
     
-    let currentPosition = { ...startPosition };
+    let currentPosition = { x: targetObject.position.x, y: targetObject.position.y, z: targetObject.position.z };
     let currentVelocity = { ...velocity };
     let startTime = null;
     let bounceCount = 0;
     
     function animateBounce(timestamp) {
         if (!startTime) startTime = timestamp;
-        const elapsed = (timestamp - startTime) / 1000;
         
-        // Calculate total velocity magnitude to determine if object has settled
         const totalVelocity = Math.sqrt(
-            currentVelocity.x * currentVelocity.x + 
-            currentVelocity.y * currentVelocity.y + 
-            currentVelocity.z * currentVelocity.z
+            currentVelocity.x ** 2 + currentVelocity.y ** 2 + currentVelocity.z ** 2
         );
         
-        // Only stop animation when object has truly settled (very low velocity and on ground)
-        // Made the threshold more lenient to ensure objects can actually settle
+        // Stop animation when object has settled
         const isSettled = totalVelocity < 1.0 && 
                           currentPosition.y <= groundLevel + 0.2 && 
                           Math.abs(currentVelocity.y) < 0.5;
         
         if (isSettled) {
-            // Final rest position - ensure object is properly grounded
             targetObject.position.y = groundLevel;
-            targetObject.scale.set(1, 1, 1); // Reset scale when settled
+            targetObject.scale.set(1, 1, 1);
             
-            // Update stored state with final position, rotation, and scale
             objectStates.set(objectName, {
-                position: {
-                    x: targetObject.position.x,
-                    y: targetObject.position.y,
-                    z: targetObject.position.z
-                },
-                rotation: {
-                    x: targetObject.rotation.x,
-                    y: targetObject.rotation.y,
-                    z: targetObject.rotation.z
-                },
-                scale: {
-                    x: targetObject.scale.x,
-                    y: targetObject.scale.y,
-                    z: targetObject.scale.z
-                }
+                position: { ...targetObject.position },
+                rotation: { ...targetObject.rotation },
+                scale: { ...targetObject.scale }
             });
             return;
         }
         
         const deltaTime = 0.016; // ~60fps
         
-        // Apply gravity to Y velocity
         currentVelocity.y += gravity * deltaTime;
-        
-        // Update position based on velocity
         currentPosition.x += currentVelocity.x * deltaTime;
         currentPosition.y += currentVelocity.y * deltaTime;
         currentPosition.z += currentVelocity.z * deltaTime;
-        
-        // Collision detection and response
         
         // Ground collision
         if (currentPosition.y <= groundLevel && currentVelocity.y < 0) {
@@ -859,53 +706,35 @@ function hopAnimation(objectName) {
             targetObject.rotation.x += (Math.random() - 0.5) * 0.5;
             targetObject.rotation.z += (Math.random() - 0.5) * 0.5;
             
-            // Add some randomness to prevent repetitive motion, but reduce it over time
             const randomFactor = Math.max(0.1, 1 - (bounceCount * 0.2));
             currentVelocity.x += (Math.random() - 0.5) * 2 * randomFactor;
             currentVelocity.z += (Math.random() - 0.5) * 2 * randomFactor;
-            
-            // Apply additional damping to help objects settle
-            if (totalVelocity < 3) {
-                currentVelocity.x *= 0.8;
-                currentVelocity.z *= 0.8;
-            }
         }
         
-        // Boundary collisions (X axis)
+        // Boundary collisions
         if (currentPosition.x <= boundaries.x.min || currentPosition.x >= boundaries.x.max) {
             currentVelocity.x = -currentVelocity.x * 0.8;
             currentPosition.x = Math.max(boundaries.x.min, Math.min(boundaries.x.max, currentPosition.x));
         }
-        
-        // Boundary collisions (Z axis)
         if (currentPosition.z <= boundaries.z.min || currentPosition.z >= boundaries.z.max) {
             currentVelocity.z = -currentVelocity.z * 0.8;
             currentPosition.z = Math.max(boundaries.z.min, Math.min(boundaries.z.max, currentPosition.z));
         }
         
-        // Apply position to object
         targetObject.position.set(currentPosition.x, currentPosition.y, currentPosition.z);
         
-        // Squash and stretch based on velocity
-        const velocityMagnitude = Math.sqrt(
-            currentVelocity.x * currentVelocity.x + 
-            currentVelocity.y * currentVelocity.y + 
-            currentVelocity.z * currentVelocity.z
-        );
-        
+        // Squash and stretch
+        const velocityMagnitude = Math.sqrt(currentVelocity.x ** 2 + currentVelocity.y ** 2 + currentVelocity.z ** 2);
         const squashFactor = Math.max(0.6, 1 - (velocityMagnitude / 20) * 0.4);
         const stretchFactor = Math.min(1.4, 1 + (Math.abs(currentVelocity.y) / 15) * 0.4);
         
         if (currentPosition.y <= groundLevel + 0.1) {
-            // More squash when touching ground
             targetObject.scale.set(1.3, 0.7, 1.3);
         } else {
-            // Stretch when in air
             targetObject.scale.set(squashFactor, stretchFactor, squashFactor);
         }
         
-        // Rotation based on movement direction - more dramatic for ragdoll effect
-        const rotationSpeed = velocityMagnitude * 0.2;
+        // Rotation based on movement direction
         targetObject.rotation.x += currentVelocity.z * deltaTime * 1.0;
         targetObject.rotation.z += currentVelocity.x * deltaTime * 1.0;
         targetObject.rotation.y += (currentVelocity.x + currentVelocity.z) * deltaTime * 0.5;
@@ -920,35 +749,19 @@ window.addEventListener('pointermove', handlePointerMove);
 window.addEventListener('click', handleClick);
 window.addEventListener('resize', handleResize);
 window.addEventListener('orientationchange', handleOrientationChange);
-window.addEventListener('keydown', onKeyDown); // Using new handlers
-window.addEventListener('keyup', onKeyUp);   // Using new handlers
+window.addEventListener('keydown', onKeyDown);
+window.addEventListener('keyup', onKeyUp);
 
 // Prevent zoom on mobile
-document.addEventListener('touchstart', function(e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-}, { passive: false });
+document.addEventListener('touchstart', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+document.addEventListener('touchmove', (e) => { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
 
-document.addEventListener('touchmove', function(e) {
-    if (e.touches.length > 1) {
-        e.preventDefault();
-    }
-}, { passive: false });
-
-// Add play button event listener
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize mobile support first
     initMobileSupport();
     
-    // Update loading subtitle based on device type
     const loadingSubtitle = document.querySelector('.loading-subtitle');
     if (loadingSubtitle) {
-        if (isMobile) {
-            loadingSubtitle.textContent = 'use touch controls to move';
-        } else {
-            loadingSubtitle.textContent = 'use arrow keys to move';
-        }
+        loadingSubtitle.textContent = isMobile ? 'use touch controls to move' : 'use arrow keys to move';
     }
     
     const playButton = document.getElementById('play-button');
@@ -956,296 +769,111 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalCloseBtn = document.getElementById('modal-close');
     const modalOverlay = document.getElementById('modal-overlay');
     
-    // Play button click handler
     if (playButton) {
         playButton.addEventListener('click', () => {
             if (isLoadingComplete) {
                 gameStarted = true;
-                if (loadingScreen) {
-                    loadingScreen.style.display = 'none';
-                }
+                if (loadingScreen) loadingScreen.style.display = 'none';
+                if (isMobile) createMobileControls();
                 
-                // Create mobile controls after game starts
-                if (isMobile) {
-                    createMobileControls();
-                }
-                
-                // Start background music when game starts
                 if (!isMuted) {
                     playSound("projectsSFX");
                     playSound("backgroundMusic");
                 }
-                
                 console.log('Game started!');
             }
         });
     }
     
-    // Modal close button handler
-    if (modalCloseBtn) {
-        modalCloseBtn.addEventListener('click', hideModal);
-    }
-    
-    // Modal overlay click handler (close modal when clicking outside)
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', hideModal);
-    }
-    
-    // Control button handlers
-    if (musicToggleButton) {
-        musicToggleButton.addEventListener('click', toggleMusic);
-    }
-    
-    if (themeToggleButton) {
-        themeToggleButton.addEventListener('click', toggleTheme);
-    }
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', hideModal);
+    if (modalOverlay) modalOverlay.addEventListener('click', hideModal);
+    if (musicToggleButton) musicToggleButton.addEventListener('click', toggleMusic);
+    if (themeToggleButton) themeToggleButton.addEventListener('click', toggleTheme);
 });
 
-// =================================================================
-// MOBILE SUPPORT & TOUCH CONTROLS
-// =================================================================
 let isMobile = false;
-let touchControls = {
-    up: false,
-    down: false,
-    left: false,
-    right: false
-};
+const touchControls = { up: false, down: false, left: false, right: false };
 
-// Mobile detection
 function detectMobile() {
     const userAgent = navigator.userAgent || navigator.vendor || window.opera;
     const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isSmallScreen = window.innerWidth <= 768;
-    
     return isMobileDevice || (isTouchDevice && isSmallScreen);
 }
 
-// Initialize mobile support
 function initMobileSupport() {
     isMobile = detectMobile();
-    
     if (isMobile) {
-        // Don't create mobile controls yet - wait until game starts
-        
-        // Adjust camera settings for mobile
-        camera.zoom = 1.5; // Zoom out a bit more for mobile
+        camera.zoom = 1.5;
         camera.updateProjectionMatrix();
-        
-        // Reduce shadow quality for better performance
         sun.shadow.mapSize.width = 2048;
         sun.shadow.mapSize.height = 2048;
-        
-        // Reduce renderer quality for mobile
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-        
         console.log('Mobile support enabled');
     }
 }
 
-// Create mobile control buttons
 function createMobileControls() {
-    // Don't create controls if they already exist
     if (document.getElementById('mobile-controls')) return;
     
-    // Create controls container
     const controlsContainer = document.createElement('div');
     controlsContainer.id = 'mobile-controls';
     controlsContainer.innerHTML = `
         <div class="mobile-controls-container">
             <div class="dpad-container">
-                <button class="dpad-btn dpad-up" data-direction="up">
-                    <i class="fas fa-chevron-up"></i>
-                </button>
+                <button class="dpad-btn dpad-up" data-direction="up"><i class="fas fa-chevron-up"></i></button>
                 <div class="dpad-middle">
-                    <button class="dpad-btn dpad-left" data-direction="left">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button class="dpad-btn dpad-right" data-direction="right">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+                    <button class="dpad-btn dpad-left" data-direction="left"><i class="fas fa-chevron-left"></i></button>
+                    <button class="dpad-btn dpad-right" data-direction="right"><i class="fas fa-chevron-right"></i></button>
                 </div>
-                <button class="dpad-btn dpad-down" data-direction="down">
-                    <i class="fas fa-chevron-down"></i>
-                </button>
+                <button class="dpad-btn dpad-down" data-direction="down"><i class="fas fa-chevron-down"></i></button>
             </div>
-        </div>
-    `;
-    
+        </div>`;
     document.body.appendChild(controlsContainer);
     
-    // Add mobile control styles
     const mobileStyles = document.createElement('style');
     mobileStyles.textContent = `
-        #mobile-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            z-index: 1000;
-            display: block;
-        }
-        
-        .mobile-controls-container {
-            background: rgba(139, 101, 89, 0.9);
-            border-radius: 15px;
-            padding: 15px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(205, 164, 147, 0.3);
-        }
-        
-        .dpad-container {
-            display: grid;
-            grid-template-rows: 50px 50px 50px;
-            grid-template-columns: 50px 50px 50px;
-            gap: 5px;
-            width: 160px;
-            height: 160px;
-        }
-        
-        .dpad-up {
-            grid-column: 2;
-            grid-row: 1;
-        }
-        
-        .dpad-middle {
-            grid-column: 1 / 4;
-            grid-row: 2;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .dpad-left {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .dpad-right {
-            width: 50px;
-            height: 50px;
-        }
-        
-        .dpad-down {
-            grid-column: 2;
-            grid-row: 3;
-        }
-        
-        .dpad-btn {
-            width: 50px;
-            height: 50px;
-            border: 2px solid rgba(205, 164, 147, 0.5);
-            background: rgba(227, 201, 187, 0.8);
-            border-radius: 8px;
-            color: #654321;
-            font-size: 18px;
-            cursor: pointer;
-            transition: all 0.1s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-        
-        .dpad-btn:active {
-            background: rgba(205, 164, 147, 0.9);
-            transform: scale(0.95);
-            border-color: rgba(139, 101, 89, 0.8);
-        }
-        
-        .dpad-btn i {
-            pointer-events: none;
-        }
-        
+        #mobile-controls { position: fixed; bottom: 20px; left: 20px; z-index: 1000; display: block; }
+        .mobile-controls-container { background: rgba(139, 101, 89, 0.9); border-radius: 15px; padding: 15px; backdrop-filter: blur(10px); border: 2px solid rgba(205, 164, 147, 0.3); }
+        .dpad-container { display: grid; grid-template-rows: 50px 50px 50px; grid-template-columns: 50px 50px 50px; gap: 5px; width: 160px; height: 160px; }
+        .dpad-up { grid-column: 2; grid-row: 1; }
+        .dpad-middle { grid-column: 1 / 4; grid-row: 2; display: flex; justify-content: space-between; align-items: center; }
+        .dpad-left, .dpad-right { width: 50px; height: 50px; }
+        .dpad-down { grid-column: 2; grid-row: 3; }
+        .dpad-btn { width: 50px; height: 50px; border: 2px solid rgba(205, 164, 147, 0.5); background: rgba(227, 201, 187, 0.8); border-radius: 8px; color: #654321; font-size: 18px; cursor: pointer; transition: all 0.1s ease; display: flex; align-items: center; justify-content: center; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
+        .dpad-btn:active { background: rgba(205, 164, 147, 0.9); transform: scale(0.95); border-color: rgba(139, 101, 89, 0.8); }
+        .dpad-btn i { pointer-events: none; }
         @media (max-width: 768px) {
-            #mobile-controls {
-                display: block;
-            }
-            
-            /* Adjust other UI elements for mobile */
-            .controls {
-                top: 10px;
-                right: 10px;
-                gap: 8px;
-            }
-            
-            .control-btn {
-                width: 40px;
-                height: 40px;
-                font-size: 16px;
-            }
-            
-            .modal {
-                margin: 10px;
-                max-width: calc(100vw - 20px);
-                max-height: calc(100vh - 20px);
-            }
-            
-            .modal-image {
-                max-width: 100%;
-                height: auto;
-            }
-        }
-    `;
-    
+            #mobile-controls { display: block; }
+            .controls { top: 10px; right: 10px; gap: 8px; }
+            .control-btn { width: 40px; height: 40px; font-size: 16px; }
+            .modal { margin: 10px; max-width: calc(100vw - 20px); max-height: calc(100vh - 20px); }
+            .modal-image { max-width: 100%; height: auto; }
+        }`;
     document.head.appendChild(mobileStyles);
-    
-    // Add touch event listeners
     setupMobileTouchEvents();
 }
 
-// Setup touch events for mobile controls
 function setupMobileTouchEvents() {
-    const dpadButtons = document.querySelectorAll('.dpad-btn');
-    
-    dpadButtons.forEach(button => {
+    document.querySelectorAll('.dpad-btn').forEach(button => {
         const direction = button.getAttribute('data-direction');
         
-        // Touch start
-        button.addEventListener('touchstart', (e) => {
+        const setTouch = (state) => (e) => {
             e.preventDefault();
-            touchControls[direction] = true;
+            touchControls[direction] = state;
             updateMovementFromTouch();
-        }, { passive: false });
+        };
         
-        // Touch end
-        button.addEventListener('touchend', (e) => {
-            e.preventDefault();
-            touchControls[direction] = false;
-            updateMovementFromTouch();
-        }, { passive: false });
-        
-        // Touch cancel
-        button.addEventListener('touchcancel', (e) => {
-            e.preventDefault();
-            touchControls[direction] = false;
-            updateMovementFromTouch();
-        }, { passive: false });
-        
-        // Mouse events for testing on desktop
-        button.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            touchControls[direction] = true;
-            updateMovementFromTouch();
-        });
-        
-        button.addEventListener('mouseup', (e) => {
-            e.preventDefault();
-            touchControls[direction] = false;
-            updateMovementFromTouch();
-        });
-        
-        button.addEventListener('mouseleave', (e) => {
-            e.preventDefault();
-            touchControls[direction] = false;
-            updateMovementFromTouch();
-        });
+        button.addEventListener('touchstart', setTouch(true), { passive: false });
+        button.addEventListener('touchend', setTouch(false), { passive: false });
+        button.addEventListener('touchcancel', setTouch(false), { passive: false });
+        button.addEventListener('mousedown', setTouch(true));
+        button.addEventListener('mouseup', setTouch(false));
+        button.addEventListener('mouseleave', setTouch(false));
     });
 }
 
-// Update movement state from touch controls
 function updateMovementFromTouch() {
     if (isMobile) {
         pressedButtons.up = touchControls.up;
@@ -1255,12 +883,11 @@ function updateMovementFromTouch() {
     }
 }
 
-// Handle mobile orientation changes
 function handleOrientationChange() {
+    // Add a small delay to allow the browser to update dimensions
     setTimeout(() => {
         handleResize();
         if (isMobile) {
-            // Adjust zoom based on orientation
             const isLandscape = window.innerWidth > window.innerHeight;
             camera.zoom = isLandscape ? 1.8 : 1.5;
             camera.updateProjectionMatrix();
@@ -1268,9 +895,6 @@ function handleOrientationChange() {
     }, 100);
 }
 
-// =================================================================
-// ANIMATION LOOP
-// =================================================================
 function animate() {
     const deltaTime = Math.min(0.05, clock.getDelta());
     
@@ -1293,6 +917,3 @@ function animate() {
 }
 
 renderer.setAnimationLoop(animate);
-
-// NOTE: Fill in the "Your existing logic here" comments with your own functions
-// if you have removed them from this file for brevity.
