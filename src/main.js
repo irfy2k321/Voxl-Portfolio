@@ -257,7 +257,7 @@ const modalContent = {
         description: "Something I cooked up in an hour when I was bored",
         image: "/Project3-billboard.png",
         links: [
-            { text: "View Live Demo", url: "https://example.com/weather-app" }
+            { text: "View Live Demo", url: "https://testachilles.netlify.app/" }
         ]
     },
     Chest: {
