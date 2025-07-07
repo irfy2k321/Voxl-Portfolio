@@ -10,28 +10,42 @@ const sounds = {
     src: ["/sfx/music.ogg"],
     loop: true,
     volume: 0.3,
-    preload: true,
+    preload: false,
   }),
   projectsSFX: new Howl({
     src: ["/sfx/projects.ogg"],
     volume: 0.5,
-    preload: true,
+    preload: false,
   }),
   pokemonSFX: new Howl({
     src: ["/sfx/pokemon.ogg"],
     volume: 0.5,
-    preload: true,
+    preload: false,
   }),
   jumpSFX: new Howl({
     src: ["/sfx/jumpsfx.ogg"],
     volume: 1.0,
-    preload: true,
+    preload: false,
   }),
 };
 
 let isMuted = false;
+let audioInitialized = false;
+
+function initializeAudio() {
+  if (!audioInitialized) {
+    // Load all sounds after user interaction
+    Object.values(sounds).forEach(sound => {
+      sound.load();
+    });
+    audioInitialized = true;
+  }
+}
 
 function playSound(soundId) {
+  if (!audioInitialized) {
+    initializeAudio();
+  }
   if (!isMuted && sounds[soundId]) {
     sounds[soundId].play();
   }
@@ -104,6 +118,10 @@ const musicToggleButton = document.querySelector("#music-toggle");
 const themeToggleButton = document.querySelector("#theme-toggle");
 
 function toggleMusic() {
+  if (!audioInitialized) {
+    initializeAudio();
+  }
+  
   isMuted = !isMuted;
   const musicIcon = musicToggleButton?.querySelector('.music-icon');
   
@@ -772,6 +790,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (playButton) {
         playButton.addEventListener('click', () => {
             if (isLoadingComplete) {
+                // Initialize audio on first user interaction
+                initializeAudio();
+                
                 gameStarted = true;
                 if (loadingScreen) loadingScreen.style.display = 'none';
                 if (isMobile) createMobileControls();
