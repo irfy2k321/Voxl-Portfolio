@@ -530,10 +530,10 @@ function updatePlayer(deltaTime) {
     playerVelocity.addScaledVector(playerVelocity, damping);
 
     const moveVector = new THREE.Vector3();
-    if (pressedButtons.up) moveVector.x = 1;
-    if (pressedButtons.down) moveVector.x = -1;
-    if (pressedButtons.left) moveVector.z = -1;
-    if (pressedButtons.right) moveVector.z = 1;
+    if (pressedButtons.up) moveVector.z = 1;  // W key now moves left
+    if (pressedButtons.down) moveVector.z = -1;  // S key now moves right
+    if (pressedButtons.left) moveVector.x = 1; // A key now moves backward
+    if (pressedButtons.right) moveVector.x = -1; // D key now moves forward
     moveVector.normalize();
 
     if (moveVector.length() > 0) {
@@ -548,14 +548,14 @@ function updatePlayer(deltaTime) {
         }
         
         // Fixed rotation based on isometric view
-        if (pressedButtons.up && !pressedButtons.left && !pressedButtons.right) targetRotation = 0;           // Forward
-        else if (pressedButtons.down && !pressedButtons.left && !pressedButtons.right) targetRotation = Math.PI;     // Backward
-        else if (pressedButtons.left && !pressedButtons.up && !pressedButtons.down) targetRotation = Math.PI / 2;    // Left
-        else if (pressedButtons.right && !pressedButtons.up && !pressedButtons.down) targetRotation = -Math.PI / 2;  // Right
-        else if (pressedButtons.up && pressedButtons.right) targetRotation = -Math.PI / 4;   // Forward-Right
-        else if (pressedButtons.up && pressedButtons.left) targetRotation = Math.PI / 4;     // Forward-Left
-        else if (pressedButtons.down && pressedButtons.right) targetRotation = -Math.PI * 0.75; // Backward-Right
-        else if (pressedButtons.down && pressedButtons.left) targetRotation = Math.PI * 0.75;   // Backward-Left
+        if (pressedButtons.up && !pressedButtons.left && !pressedButtons.right) targetRotation = -Math.PI / 2;     
+        else if (pressedButtons.down && !pressedButtons.left && !pressedButtons.right) targetRotation = Math.PI / 2; 
+        else if (pressedButtons.left && !pressedButtons.up && !pressedButtons.down) targetRotation = 0;        
+        else if (pressedButtons.right && !pressedButtons.up && !pressedButtons.down) targetRotation = Math.PI;             
+        else if (pressedButtons.up && pressedButtons.right) targetRotation = -Math.PI * 0.75;     
+        else if (pressedButtons.up && pressedButtons.left) targetRotation = -Math.PI / 4;   
+        else if (pressedButtons.down && pressedButtons.right) targetRotation = Math.PI * 0.75;  
+        else if (pressedButtons.down && pressedButtons.left) targetRotation = Math.PI / 4; 
     } else {
         character.isMoving = false;
     }
