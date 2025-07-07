@@ -228,7 +228,6 @@ let playerOnFloor = false;
 
 const pressedButtons = { up: false, left: false, right: false, down: false };
 let targetRotation = 0;
-
 const intersectObjects = [];
 const intersectObjectsNames = ["Project_1", "Project_2", "Project_3", "Chicken", "Snorlax", "Pikachu", "Bulbasaur", "Charmander", "Squirtle", "Chest", "Picnic"];
 const objectStates = new Map();
@@ -452,6 +451,12 @@ loader.load('/Portfolio-map-Snorlax1.glb', function (gltf) {
         }
     });
     
+    // Add glowing outlines to interactable objects
+    setTimeout(() => {
+        addGlowingOutlines();
+        console.log('Glowing outlines added to interactable objects!');
+    }, 500);
+    
     startLoadingProgress();
 }, undefined, function (error) {
     console.error('An error occurred while loading the model:', error);
@@ -638,6 +643,9 @@ function handleClick(event) {
         if (intersectObjectsNames.includes(objectName)) {
             const hopObjects = ["Chicken", "Snorlax", "Pikachu", "Bulbasaur", "Charmander", "Squirtle"];
             
+            // Remove glow from clicked object
+            removeGlowingOutline(objectName);
+            
             if (hopObjects.includes(objectName)) {
                 if (!isMuted) playSound("pokemonSFX");
                 hopAnimation(objectName);
@@ -763,6 +771,75 @@ function hopAnimation(objectName) {
     requestAnimationFrame(animateBounce);
 }
 
+// Add glowing outlines to interactable objects
+function addGlowingOutlines() {
+    intersectObjects.forEach(obj => {
+        if (intersectObjectsNames.includes(obj.name)) {
+            console.log('Adding glow to:', obj.name);
+            
+            // Mark object as having glow
+            obj.userData.hasGlow = true;
+            
+            // Traverse the object and its children to add glow
+            obj.traverse((child) => {
+                if (child.isMesh && child.material) {
+                    // Store original material if not already stored
+                    if (!child.userData.originalMaterial) {
+                        child.userData.originalMaterial = child.material.clone();
+                    }
+                    
+                    // Create a glowing material
+                    const glowMaterial = child.material.clone();
+                    glowMaterial.emissive = new THREE.Color(0x00ffff); // Cyan glow
+                    glowMaterial.emissiveIntensity = 0.3;
+                    
+                    // Add a subtle pulsing effect
+                    child.userData.glowMaterial = glowMaterial;
+                    child.material = glowMaterial;
+                    
+                    console.log('Added glow to mesh:', child.name);
+                }
+            });
+        }
+    });
+}
+
+// Remove glowing outline from an object
+function removeGlowingOutline(objectName) {
+    const targetObject = intersectObjects.find(obj => obj.name === objectName);
+    if (targetObject && targetObject.userData.hasGlow) {
+        console.log('Removing glow from:', objectName);
+        
+        // Mark object as no longer having glow
+        targetObject.userData.hasGlow = false;
+        
+        // Traverse the object and restore original materials
+        targetObject.traverse((child) => {
+            if (child.isMesh && child.userData.originalMaterial) {
+                child.material = child.userData.originalMaterial;
+                console.log('Restored original material for mesh:', child.name);
+            }
+        });
+    }
+}
+
+// Update glow animation
+function updateGlowAnimation() {
+    const time = clock.getElapsedTime();
+    
+    intersectObjects.forEach(obj => {
+        if (intersectObjectsNames.includes(obj.name) && obj.userData.hasGlow) {
+            obj.traverse((child) => {
+                if (child.isMesh && child.userData.glowMaterial) {
+                    // Pulsing glow effect
+                    const pulse = 0.2 + Math.sin(time * 2) * 0.1;
+                    child.userData.glowMaterial.emissiveIntensity = pulse;
+                }
+            });
+        }
+    });
+}
+
 window.addEventListener('pointermove', handlePointerMove);
 window.addEventListener('click', handleClick);
 window.addEventListener('resize', handleResize);
@@ -794,6 +871,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 initializeAudio();
                 
                 gameStarted = true;
+                console.log('Game started! Glowing outlines should be visible.');
+                
                 if (loadingScreen) loadingScreen.style.display = 'none';
                 if (isMobile) createMobileControls();
                 
@@ -933,6 +1012,8 @@ function animate() {
             document.body.style.cursor = 'pointer';
         }
     }
+
+    updateGlowAnimation();
 
     renderer.render(scene, camera);
 }
